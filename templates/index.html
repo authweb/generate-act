@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Генерация акта</title>
+		<!-- Подключение Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet" />
+		<link rel="stylesheet" href="/static/style.css" />
+		<script>
+			function addServiceRow() {
+				const table = document.getElementById("services");
+				const newRow = table.insertRow(-1);
+				const cols = [
+					"service_date",
+					"car_number",
+					"service_name",
+					"quantity",
+					"price",
+					"total",
+				];
+				cols.forEach((col, idx) => {
+					let cell = newRow.insertCell(idx);
+					let input = document.createElement("input");
+					input.name = col;
+					input.type =
+						col === "quantity" || col === "price" ? "number" : "text";
+					input.className = "form-control";
+					input.required = true;
+					if (col === "total") {
+						input.readOnly = true;
+						input.className += " bg-light";
+					}
+					input.oninput = () => calculateTotal(newRow);
+					cell.appendChild(input);
+				});
+				const removeCell = newRow.insertCell(cols.length);
+				const removeBtn = document.createElement("button");
+				removeBtn.textContent = "🗑️";
+				removeBtn.className = "btn btn-danger";
+				removeBtn.type = "button";
+				removeBtn.onclick = () => table.deleteRow(newRow.rowIndex);
+				removeCell.appendChild(removeBtn);
+			}
+
+			function calculateTotal(row) {
+				const quantity = row.cells[3].querySelector("input").value;
+				const price = row.cells[4].querySelector("input").value;
+				const totalCell = row.cells[5].querySelector("input");
+				totalCell.value =
+					quantity && price ? (quantity * price).toFixed(2) : "";
+
+				calculateGrandTotal();
+			}
+
+			function calculateGrandTotal() {
+				const table = document.getElementById("services");
+				let grandTotal = 0;
+				for (let i = 1; i < table.rows.length; i++) {
+					const total =
+						parseFloat(table.rows[i].cells[5].querySelector("input").value) ||
+						0;
+					grandTotal += total;
+				}
+				document.getElementById("grandTotal").textContent =
+					grandTotal.toFixed(2) + " ₽";
+			}
+
+			form.onsubmit = () => {
+				console.log("Данные формы:", new FormData(form)); // Логируем данные формы перед отправкой
+			};
+		</script>
+	</head>
+	<body class="bg-light">
+		<div class="container mt-4">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white">
+					<h3 class="mb-0">🔧 Генерация акта о выполненных работах</h3>
+				</div>
+				<div class="card-body">
+					<form action="/generate" method="post">
+						<!-- Номер и дата акта -->
+						<div class="mb-3">
+							<label class="form-label">Номер акта</label>
+							<input
+								type="text"
+								name="act_number"
+								class="form-control"
+								required />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Дата акта</label>
+							<input
+								type="date"
+								name="act_date"
+								class="form-control"
+								required />
+						</div>
+
+						<!-- Информация о заказчике -->
+						<div class="mb-3">
+							<h5 class="text-primary">🧾 Информация о заказчике</h5>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Название организации</label>
+							<input
+								type="text"
+								name="client_name"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Адрес заказчика</label>
+							<input
+								type="text"
+								name="client_address"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Телефон заказчика</label>
+							<input
+								type="tel"
+								name="client_phone"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Email заказчика</label>
+							<input
+								type="email"
+								name="client_email"
+								class="form-control"
+								required />
+						</div>
+
+						<!-- Подпись заказчика -->
+						<div class="mb-3">
+							<label class="form-label">Подпись заказчика</label>
+							<input
+								type="text"
+								name="client_signature"
+								class="form-control"
+								required />
+						</div>
+
+						<!-- Данные исполнителя -->
+						<div class="mb-3">
+							<h5 class="text-primary">🧑‍🔧 Информация об исполнителе</h5>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">ФИО исполнителя</label>
+							<input
+								type="text"
+								name="executor_name"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Адрес исполнителя</label>
+							<input
+								type="text"
+								name="executor_address"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Телефон исполнителя</label>
+							<input
+								type="tel"
+								name="executor_phone"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Email исполнителя</label>
+							<input
+								type="email"
+								name="executor_email"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Подпись исполнителя</label>
+							<input
+								type="text"
+								name="executor_signature"
+								class="form-control"
+								required />
+						</div>
+
+						<!-- Основание -->
+						<div class="mb-3">
+							<h5 class="text-primary">📄 Основание</h5>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Номер счёта</label>
+							<input
+								type="text"
+								name="invoice_number"
+								class="form-control"
+								required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Дата счёта</label>
+							<input
+								type="date"
+								name="invoice_date"
+								class="form-control"
+								required />
+						</div>
+
+						<!-- Услуги -->
+						<div class="mb-3">
+							<h5 class="text-primary">🛠️ Услуги</h5>
+						</div>
+
+						<table class="table table-bordered table-hover" id="services">
+							<thead class="table-secondary">
+								<tr>
+									<th>Дата</th>
+									<th>Госномер ТС</th>
+									<th>Название услуги</th>
+									<th>Кол-во</th>
+									<th>Цена (₽)</th>
+									<th>Сумма (₽)</th>
+									<th>Удалить</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+						<button
+							type="button"
+							class="btn btn-outline-primary mb-3"
+							onclick="addServiceRow()">
+							➕ Добавить услугу
+						</button>
+
+						<!-- Итог -->
+						<div class="mb-4">
+							<h5>💰 Итог: <span id="grandTotal">0.00 ₽</span></h5>
+						</div>
+
+						<button type="submit" class="btn btn-success w-100">
+							🚀 Сгенерировать акт
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Подключение Bootstrap JS -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

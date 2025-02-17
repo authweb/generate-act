@@ -1,0 +1,18 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+h3, h5 {
+    font-weight: 600;
+}
+.table {
+    text-align: center;
+    vertical-align: middle;
+}
+input:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+}
+button.btn-outline-primary:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
